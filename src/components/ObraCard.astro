@@ -1,0 +1,156 @@
+---
+import { Image } from 'astro:assets';
+import EstadoObra from './EstadoObra.astro';
+import { rutaDe, useT, type Lang } from '@/i18n/utils';
+import { medidas, portada, precio, textoAlt, tituloDe, type Obra } from '@/lib/obras';
+
+interface Props {
+  obra: Obra;
+  lang: Lang;
+  /** Las primeras filas se cargan de inmediato; el resto en diferido. */
+  prioridad?: boolean;
+}
+
+const { obra, lang, prioridad = false } = Astro.props;
+const t = useT(lang);
+
+const img = portada(obra);
+const titulo = tituloDe(obra, lang);
+const href = rutaDe('obra', obra.id, lang);
+const importe = precio(obra, lang);
+const vendida = obra.data.estado === 'vendida';
+
+// Los datos del pie van por partes porque cualquiera puede faltar: hay obras
+// sin medidas y las vendidas no enseñan precio. Si no queda nada, no se
+// pinta la línea en vez de dejar un hueco.
+const datos = [
+  medidas(obra, lang),
+  importe ?? (obra.data.estado === 'disponible' ? t('obra.consultar') : null),
+].filter((d): d is string => Boolean(d));
+---
+
+<article class:list={['tarjeta', { 'tarjeta--vendida': vendida }]}>
+  <a class="tarjeta__enlace" href={href}>
+    <div class="tarjeta__marco">
+      {
+        img && (
+          <Image
+            src={img}
+            alt={textoAlt(obra, lang)}
+            widths={[320, 480, 720, 960]}
+            sizes="(max-width: 40rem) 46vw, (max-width: 64rem) 30vw, 22rem"
+            quality={82}
+            loading={prioridad ? 'eager' : 'lazy'}
+            fetchpriority={prioridad ? 'high' : 'auto'}
+            class="tarjeta__img"
+          />
+        )
+      }
+
+      <div class="tarjeta__sello">
+        <EstadoObra estado={obra.data.estado} lang={lang} variante="punto" />
+      </div>
+    </div>
+
+    <div class="tarjeta__pie">
+      <h3 class="tarjeta__titulo">{titulo}</h3>
+      {
+        datos.length > 0 && (
+          <p class="tarjeta__datos">
+            {datos.map((d, i) => (
+              <>
+                {i > 0 && (
+                  <span class="tarjeta__sep" aria-hidden="true">
+                    ·
+                  </span>
+                )}
+                <span class:list={{ tarjeta__precio: d === importe }}>{d}</span>
+              </>
+            ))}
+          </p>
+        )
+      }
+      <EstadoObra estado={obra.data.estado} lang={lang} variante="linea" />
+    </div>
+  </a>
+</article>
+
+<style>
+  .tarjeta__enlace {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  /* Mismo "espacio de pared" para cada obra: el cuadro se centra completo
+     dentro de un recuadro cuadrado, nunca se recorta, y los pies de foto
+     de toda la fila quedan alineados aunque las orientaciones varíen. */
+  .tarjeta__marco {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 1;
+    padding: clamp(0.5rem, 1.5vw, 1.25rem);
+    background: var(--bone-2);
+    overflow: hidden;
+  }
+
+  .tarjeta__img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    box-shadow: 0 10px 26px -18px rgb(22 21 26 / 0.55);
+    transition: transform 600ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      opacity var(--transicion);
+  }
+
+  .tarjeta__enlace:hover .tarjeta__img {
+    transform: scale(1.028);
+  }
+
+  /* La obra vendida se apaga un punto, no se esconde: el cliente quiere
+     que se vea que se ha vendido, pero sin robar atención a lo disponible. */
+  .tarjeta--vendida .tarjeta__img {
+    opacity: 0.88;
+  }
+
+  .tarjeta--vendida .tarjeta__enlace:hover .tarjeta__img {
+    opacity: 1;
+  }
+
+  .tarjeta__sello {
+    position: absolute;
+    top: 0.625rem;
+    right: 0.625rem;
+  }
+
+  .tarjeta__pie {
+    padding-top: 0.9rem;
+  }
+
+  .tarjeta__titulo {
+    font-size: 1.15rem;
+    font-weight: 400;
+    margin-bottom: 0.2rem;
+  }
+
+  .tarjeta__datos {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4em;
+    margin: 0 0 0.55rem;
+    font-size: 0.82rem;
+    color: var(--ink-soft);
+  }
+
+  .tarjeta__sep {
+    color: var(--line);
+  }
+
+  .tarjeta__precio {
+    font-variant-numeric: tabular-nums;
+  }
+</style>

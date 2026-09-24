@@ -1,0 +1,10 @@
+---
+import ObraView from "@/views/ObraView.astro";
+import { rutasDeObras } from "@/lib/rutas";
+import type { Obra } from "@/lib/obras";
+
+export const getStaticPaths = rutasDeObras;
+
+const { obra } = Astro.props as { obra: Obra };
+---
+<ObraView obra={obra} lang="en" />

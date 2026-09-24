@@ -1,0 +1,16 @@
+{
+  "destacada": false,
+  "titulo": "Tony cocodrilo pro skater",
+  "coleccion": "coches",
+  "anio": 2025,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 33,
+  "ancho_cm": 41,
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/tony-cocodrilo-pro-skater-01.jpg"
+  ],
+  "orden": 9
+}

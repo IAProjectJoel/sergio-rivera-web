@@ -1,0 +1,291 @@
+# Panel de administración (Sveltia CMS) — https://sveltiacms.app/en/docs
+#
+# Repositorio donde vive el contenido. El panel escribe aquí.
+#
+# En Netlify, el acceso con GitHub funciona sin tocar nada aquí: basta con
+# registrar una OAuth App en GitHub y enlazarla con el sitio de Netlify.
+#
+# En local no hace falta ningún servidor aparte: abrir /admin/ en Chrome o
+# Edge, pulsar "Work with Local Repository" y elegir la carpeta web/.
+
+backend:
+  name: github
+  repo: IAProjectJoel/sergio-rivera-web
+  branch: main
+
+# En la pestaña del navegador y en la pantalla de acceso, en vez de "Sveltia CMS".
+app_title: Panel · Sergio Rivera Martínez
+
+# Cómo se convierte un título en nombre de archivo, que acaba siendo la URL.
+slug:
+  # Sin esto, "Gerónimo II" daría una URL con tilde. Por defecto viene apagado.
+  clean_accents: true
+  # Evita URLs kilométricas cuando el título es largo, como en los prints.
+  maxlength: 60
+
+# Las fotos que suba Sergio caen donde Astro las puede optimizar.
+media_folder: src/assets/obras
+public_folder: /src/assets/obras
+
+media_libraries:
+  default:
+    config:
+      # El nombre original del móvil suele traer espacios y acentos.
+      slugify_filename: true
+      # 25 MB: un aviso claro en vez de un fallo raro al guardar.
+      max_file_size: 26214400
+      transformations:
+        # Una foto de móvil son 4000 px y varios MB. Cada versión que se
+        # suba se guarda para siempre en el historial del repositorio, así
+        # que conviene entrarla ya en un tamaño sensato. 2400 px deja margen
+        # de sobra sobre los 1600 px que usa la lupa de la ficha.
+        raster_image:
+          format: webp
+          quality: 90
+          width: 2400
+          height: 2400
+
+# Sin opción "locale": Sveltia no la admite. El panel sale en el idioma del
+# navegador de quien lo use (en español, para Sergio).
+
+collections:
+  # ---------------------------------------------------------------- OBRAS
+  - name: obras
+    label: Obras
+    label_singular: Obra
+    icon: palette
+    description: Cada obra es una ficha. Al guardar, la web se actualiza sola en uno o dos minutos.
+    folder: src/content/obras
+    extension: json
+    format: json
+    create: true
+    slug: '{{titulo}}'
+    summary: '{{titulo}} — {{estado}}'
+    # Arrastrar para ordenar, en vez de teclear números a mano.
+    reorder:
+      key: orden
+    preview_path: 'obra/{{slug}}'
+    sortable_fields: [orden, titulo, anio, precio_eur]
+    view_filters:
+      - { label: Disponibles, field: estado, eq: disponible }
+      - { label: Vendidas, field: estado, eq: vendida }
+      - { label: Sin publicar, field: publicada, eq: false }
+    view_groups:
+      - { label: Por serie, field: coleccion }
+      - { label: Por estado, field: estado }
+    fields:
+      - { name: titulo, label: Título, widget: string }
+      - {
+          name: titulo_en,
+          label: Título en inglés,
+          widget: string,
+          required: false,
+          hint: Si se deja vacío se muestra el título en español.,
+        }
+
+      - name: imagenes
+        label: Fotos
+        label_singular: Foto
+        widget: list
+        field: { name: foto, label: Foto, widget: image }
+        hint: La primera foto es la principal. Añade un detalle y una foto en pared si puedes.
+
+      - name: tipo
+        label: Tipo
+        widget: select
+        default: original
+        options:
+          - { label: Original (pieza única), value: original }
+          - { label: Lámina / print, value: print }
+
+      - {
+          name: edicion,
+          label: Edición,
+          widget: string,
+          required: false,
+          hint: 'Solo para prints. Ej.: Prueba de autor (P/A) · única, o Edición de 10. En un original, déjalo vacío.',
+        }
+      - { name: edicion_en, label: Edición en inglés, widget: string, required: false }
+
+      - name: estado
+        label: Estado
+        widget: select
+        default: disponible
+        options:
+          - { label: Disponible, value: disponible }
+          - { label: Reservada, value: reservada }
+          - { label: Vendida (sale con el punto rojo), value: vendida }
+          - { label: No está en venta, value: no_venta }
+
+      - {
+          name: precio_eur,
+          label: Precio en euros,
+          widget: number,
+          value_type: int,
+          min: 0,
+          required: false,
+          hint: Vacío = "Consultar precio". En las vendidas no se muestra nunca.,
+        }
+
+      - {
+          name: alto_cm,
+          label: Alto (cm),
+          widget: number,
+          value_type: float,
+          min: 1,
+          required: false,
+          hint: Si no se conocen las medidas se puede dejar vacío.,
+        }
+      - { name: ancho_cm, label: Ancho (cm), widget: number, value_type: float, min: 1, required: false }
+      - {
+          name: profundidad_cm,
+          label: Profundidad (cm),
+          widget: number,
+          value_type: float,
+          required: false,
+        }
+      - { name: enmarcada, label: Va enmarcada, widget: boolean, default: false }
+
+      - { name: tecnica, label: Técnica, widget: string, default: Óleo sobre lienzo }
+      - {
+          name: tecnica_en,
+          label: Técnica en inglés,
+          widget: string,
+          required: false,
+          hint: Vacío = se muestra en español. Mejor eso que una traducción equivocada.,
+        }
+
+      # Los límites son los mismos que valida la web al construirse: así el
+      # error salta aquí, y no en una compilación fallida media hora después.
+      - {
+          name: anio,
+          label: Año,
+          widget: number,
+          value_type: int,
+          min: 1980,
+          max: 2100,
+          required: false,
+        }
+
+      - name: coleccion
+        label: Serie
+        widget: relation
+        collection: colecciones
+        search_fields: [nombre]
+        value_field: '{{slug}}'
+        display_fields: [nombre]
+        required: false
+        hint: Deja vacío si la obra no pertenece a ninguna serie.
+
+      - { name: descripcion, label: Descripción, widget: text, required: false }
+      - {
+          name: descripcion_en,
+          label: Descripción en inglés,
+          widget: text,
+          required: false,
+        }
+
+      - {
+          name: destacada,
+          label: Mostrar en la portada,
+          widget: boolean,
+          default: false,
+        }
+      - {
+          name: orden,
+          label: Orden,
+          widget: number,
+          value_type: int,
+          default: 0,
+          required: false,
+          hint: Se cambia arrastrando las obras en la lista. Número más bajo = aparece antes.,
+        }
+      - {
+          name: publicada,
+          label: Publicada,
+          widget: boolean,
+          default: true,
+          hint: Desmárcalo para esconderla de la web sin borrarla.,
+        }
+
+  # ----------------------------------------------------------- COLECCIONES
+  - name: colecciones
+    label: Series
+    label_singular: Serie
+    icon: category
+    description: Las secciones del catálogo. Una serie puede colgar de otra, como Porsche de Coches.
+    folder: src/content/colecciones
+    extension: json
+    format: json
+    create: true
+    slug: '{{nombre}}'
+    summary: '{{nombre}}'
+    reorder:
+      key: orden
+    preview_path: 'coleccion/{{slug}}'
+    fields:
+      - { name: nombre, label: Nombre, widget: string }
+      - { name: nombre_en, label: Nombre en inglés, widget: string, required: false }
+      - name: padre
+        label: Serie madre
+        widget: relation
+        collection: colecciones
+        search_fields: [nombre]
+        value_field: '{{slug}}'
+        display_fields: [nombre]
+        required: false
+        hint: Solo si es una subserie (ej. Porsche dentro de Coches). Vacío = serie principal.
+      - { name: descripcion, label: Descripción, widget: text, required: false }
+      - {
+          name: descripcion_en,
+          label: Descripción en inglés,
+          widget: text,
+          required: false,
+        }
+      - {
+          name: portada,
+          label: Foto de portada,
+          widget: image,
+          required: false,
+          hint: Si se deja vacía se usa la primera obra de la serie.,
+        }
+      - { name: orden, label: Orden, widget: number, value_type: int, default: 0, required: false }
+      - { name: visible, label: Visible en la web, widget: boolean, default: true }
+
+  # --------------------------------------------------------------- PÁGINAS
+  - name: paginas
+    label: Textos
+    icon: article
+    description: La biografía y la lista de exposiciones, en español y en inglés.
+    files:
+      - name: sobre-mi-es
+        label: Sobre mí (español)
+        file: src/content/paginas/sobre-mi.md
+        preview_path: sobre-mi
+        fields:
+          - { name: clave, label: Clave, widget: hidden, default: sobre-mi }
+          - { name: lang, label: Idioma, widget: hidden, default: es }
+          - { name: titulo, label: Título, widget: string }
+          - { name: subtitulo, label: Subtítulo, widget: string, required: false }
+          - { name: retrato, label: Retrato, widget: image, required: false }
+          - name: exposiciones
+            label: Exposiciones y reconocimientos
+            widget: list
+            field: { name: linea, label: Línea, widget: string }
+          - { name: body, label: Biografía, widget: markdown }
+
+      - name: sobre-mi-en
+        label: About (English)
+        file: src/content/paginas/sobre-mi.en.md
+        preview_path: en/about
+        fields:
+          - { name: clave, label: Key, widget: hidden, default: sobre-mi }
+          - { name: lang, label: Language, widget: hidden, default: en }
+          - { name: titulo, label: Title, widget: string }
+          - { name: subtitulo, label: Subtitle, widget: string, required: false }
+          - { name: retrato, label: Portrait, widget: image, required: false }
+          - name: exposiciones
+            label: Exhibitions and awards
+            widget: list
+            field: { name: linea, label: Line, widget: string }
+          - { name: body, label: Biography, widget: markdown }

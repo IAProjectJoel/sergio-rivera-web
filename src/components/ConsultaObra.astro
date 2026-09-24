@@ -1,0 +1,110 @@
+---
+import { mailtoUrl, sitio, whatsappUrl } from '@/data/sitio';
+import { useT, type Lang } from '@/i18n/utils';
+import { medidas, precio, tituloDe, type Obra } from '@/lib/obras';
+
+interface Props {
+  obra: Obra;
+  lang: Lang;
+}
+
+const { obra, lang } = Astro.props;
+const t = useT(lang);
+
+const titulo = tituloDe(obra, lang);
+const importe = precio(obra, lang);
+const url = new URL(Astro.url.pathname, sitio.dominio).href;
+
+// El mensaje ya va escrito con la obra concreta: quien pregunta solo pulsa
+// enviar, y Sergio recibe la consulta identificada sin tener que adivinar.
+const partes = [medidas(obra, lang), importe].filter(Boolean);
+const referencia = `"${titulo}"${partes.length ? ` (${partes.join(', ')})` : ''}`;
+
+const mensaje =
+  lang === 'es'
+    ? `Hola Sergio, me interesa la obra ${referencia}.\n${url}\n\n¿Sigue disponible?`
+    : `Hi Sergio, I'm interested in ${referencia}.\n${url}\n\nIs it still available?`;
+
+const asunto =
+  lang === 'es' ? `Consulta sobre "${titulo}"` : `Enquiry about "${titulo}"`;
+
+const disponible = obra.data.estado === 'disponible';
+const vendida = obra.data.estado === 'vendida';
+const reservada = obra.data.estado === 'reservada';
+
+// Si la obra no se puede comprar (vendida o fuera de venta) el mensaje
+// cambia de intención: ya no se pregunta si sigue disponible, sino por obra
+// parecida o por encargo.
+const mensajeAlternativo =
+  lang === 'es'
+    ? `Hola Sergio, he visto ${referencia} en tu web y me gusta mucho tu trabajo. ¿Tienes obra parecida disponible o haces encargos?`
+    : `Hi Sergio, I saw ${referencia} on your site and I love your work. Do you have similar pieces available, or do you take commissions?`;
+
+const seVende = disponible || reservada;
+const textoWa = seVende ? mensaje : mensajeAlternativo;
+---
+
+<div class="consulta">
+  {vendida && <p class="consulta__nota">{t('obra.vendidaNota')}</p>}
+  {reservada && <p class="consulta__nota">{t('obra.reservadaNota')}</p>}
+
+  <div class="consulta__acciones">
+    <a class="boton boton--wa" href={whatsappUrl(textoWa)} target="_blank" rel="noopener">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path
+          d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 1.67c2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.25 8.24a8.23 8.23 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24Zm-2.6 4.2c-.15 0-.4.06-.6.28-.21.22-.8.78-.8 1.9s.82 2.2.93 2.36c.12.15 1.6 2.44 3.87 3.42.54.23.96.37 1.29.48.54.17 1.03.15 1.42.09.43-.07 1.34-.55 1.53-1.08.19-.53.19-.98.13-1.08-.06-.09-.21-.15-.43-.27-.23-.11-1.34-.66-1.55-.73-.2-.08-.36-.12-.5.11-.16.23-.58.73-.72.88-.13.15-.26.17-.49.06-.22-.12-.94-.35-1.8-1.11a6.7 6.7 0 0 1-1.24-1.55c-.13-.22-.01-.34.1-.46.1-.1.22-.26.33-.4.11-.13.15-.22.22-.37.08-.15.04-.28-.02-.4-.06-.11-.5-1.21-.68-1.66-.18-.43-.37-.37-.5-.38h-.43Z"
+        ></path>
+      </svg>
+      {t('obra.whatsapp')}
+    </a>
+
+    <a class="boton boton--secundario" href={mailtoUrl(asunto, textoWa)}>
+      {t('obra.email')}
+    </a>
+  </div>
+
+  {
+    disponible && (
+      <p class="consulta__pie">
+        {/* Sin prometer envíos concretos: eso lo decide Sergio caso a caso. */}
+        {lang === 'es'
+          ? 'Te respondo yo mismo y te cuento todo: envío, embalaje y plazos.'
+          : 'I reply myself and will tell you everything: shipping, packing and timing.'}
+      </p>
+    )
+  }
+</div>
+
+<style>
+  .consulta {
+    margin-top: 2rem;
+  }
+
+  .consulta__nota {
+    padding: 0.95rem 1.1rem;
+    background: var(--bone-2);
+    border-left: 2px solid var(--sold);
+    font-size: 0.875rem;
+    color: var(--ink-soft);
+    margin-bottom: 1.35rem;
+  }
+
+  .consulta__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .consulta__pie {
+    margin: 1rem 0 0;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+  }
+
+  @media (max-width: 26rem) {
+    .consulta__acciones {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+</style>

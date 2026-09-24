@@ -1,0 +1,19 @@
+{
+  "titulo": "Healthy life",
+  "titulo_en": "Healthy life",
+  "coleccion": "nostalgia",
+  "anio": 2025,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 33,
+  "ancho_cm": 41.5,
+  "enmarcada": false,
+  "precio_eur": 990,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/healthy-life-01.jpg"
+  ],
+  "destacada": false,
+  "orden": 100,
+  "publicada": false
+}

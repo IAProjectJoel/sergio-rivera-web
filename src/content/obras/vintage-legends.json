@@ -1,0 +1,16 @@
+{
+  "destacada": false,
+  "titulo": "Vintage legends",
+  "coleccion": "coches",
+  "anio": 2026,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 33,
+  "ancho_cm": 41,
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/vintage-legends-01.jpg"
+  ],
+  "orden": 5
+}

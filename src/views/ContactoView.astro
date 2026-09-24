@@ -1,0 +1,276 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { sitio } from '@/data/sitio';
+import { otroIdioma, ruta, useT, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useT(lang);
+
+const vias = [
+  {
+    etiqueta: t('contacto.whatsapp'),
+    valor: sitio.telefonoVisible,
+    href: `https://wa.me/${sitio.whatsapp}`,
+    externo: true,
+  },
+  {
+    etiqueta: t('contacto.email'),
+    valor: sitio.email,
+    href: `mailto:${sitio.email}`,
+    externo: false,
+  },
+  {
+    etiqueta: t('contacto.instagram'),
+    valor: sitio.instagram.usuario,
+    href: sitio.instagram.url,
+    externo: true,
+  },
+];
+---
+
+<Layout
+  lang={lang}
+  titulo={t('contacto.titulo')}
+  descripcion={t('meta.contacto.desc')}
+  altHref={ruta('contacto', otroIdioma(lang))}
+>
+  <section class="seccion">
+    <div class="contenedor contacto">
+      <div class="contacto__intro">
+        <h1>{t('contacto.titulo')}</h1>
+        <p class="contacto__lema">{t('contacto.intro')}</p>
+
+        <ul class="vias">
+          {
+            vias.map((v) => (
+              <li class="via">
+                <span class="via__etiqueta">{v.etiqueta}</span>
+                <a
+                  class="via__valor"
+                  href={v.href}
+                  target={v.externo ? '_blank' : undefined}
+                  rel={v.externo ? 'noopener' : undefined}
+                >
+                  {v.valor}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
+        <p class="contacto__galeria">
+          {t('contacto.galeria')} {sitio.galeria.nombre}, {sitio.galeria.ciudad}
+        </p>
+      </div>
+
+      <div class="contacto__form">
+        <h2 class="contacto__formTitulo">{t('contacto.form.titulo')}</h2>
+
+        <form data-form>
+          <label class="campo">
+            <span class="campo__etiqueta">{t('contacto.form.nombre')}</span>
+            <input type="text" name="nombre" required autocomplete="name" />
+          </label>
+
+          <label class="campo">
+            <span class="campo__etiqueta">{t('contacto.form.email')}</span>
+            <input type="email" name="email" required autocomplete="email" />
+          </label>
+
+          <label class="campo">
+            <span class="campo__etiqueta">{t('contacto.form.mensaje')}</span>
+            <textarea name="mensaje" rows="5" required></textarea>
+          </label>
+
+          <div class="campo__acciones">
+            <button class="boton" type="submit">{t('contacto.form.enviar')}</button>
+            <span class="campo__o">{t('contacto.form.o')}</span>
+            <button class="enlace-boton" type="button" data-por-whatsapp>
+              {t('contacto.form.porWhatsapp')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script is:inline define:vars={{ email: sitio.email, whatsapp: sitio.whatsapp, lang }}>
+  // Sin servidor: el formulario compone el mensaje y lo abre en el correo o
+  // en WhatsApp del visitante. Cuando haya un endpoint real (Formspree,
+  // Web3Forms...) basta con sustituir este bloque por un fetch.
+  const form = document.querySelector('[data-form]');
+
+  if (form) {
+    const componer = () => {
+      const datos = new FormData(form);
+      const nombre = String(datos.get('nombre') ?? '');
+      const correo = String(datos.get('email') ?? '');
+      const mensaje = String(datos.get('mensaje') ?? '');
+      const cuerpo =
+        lang === 'es'
+          ? `${mensaje}\n\n—\n${nombre}\n${correo}`
+          : `${mensaje}\n\n—\n${nombre}\n${correo}`;
+      const asunto = lang === 'es' ? `Mensaje desde la web — ${nombre}` : `Message from the site — ${nombre}`;
+      return { asunto, cuerpo };
+    };
+
+    form.addEventListener('submit', (evento) => {
+      evento.preventDefault();
+      if (!form.reportValidity()) return;
+      const { asunto, cuerpo } = componer();
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
+    });
+
+    form.querySelector('[data-por-whatsapp]')?.addEventListener('click', () => {
+      if (!form.reportValidity()) return;
+      const { cuerpo } = componer();
+      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(cuerpo)}`, '_blank', 'noopener');
+    });
+  }
+</script>
+
+<style>
+  .contacto {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(2.5rem, 1rem + 6vw, 5rem);
+    align-items: start;
+  }
+
+  .contacto__lema {
+    font-size: 1.05rem;
+    color: var(--ink-soft);
+    max-width: 34ch;
+    margin-block: 1.25rem 2.5rem;
+  }
+
+  .vias {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .via {
+    display: flex;
+    align-items: baseline;
+    gap: 1.5rem;
+    padding-block: 0.95rem;
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .via__etiqueta {
+    flex: 0 0 6.5rem;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .via__valor {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    text-decoration: none;
+    transition: color var(--transicion);
+  }
+
+  .via__valor:hover {
+    color: var(--accent);
+  }
+
+  .contacto__galeria {
+    margin-top: 2rem;
+    font-size: 0.85rem;
+    color: var(--ink-faint);
+  }
+
+  .contacto__form {
+    background: var(--bone-2);
+    padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+
+  .contacto__formTitulo {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .campo {
+    display: block;
+    margin-bottom: 1.15rem;
+  }
+
+  .campo__etiqueta {
+    display: block;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 0.4rem;
+  }
+
+  .campo input,
+  .campo textarea {
+    width: 100%;
+    padding: 0.7em 0.85em;
+    background: var(--bone);
+    border: 1px solid var(--line);
+    border-radius: var(--radio);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--ink);
+    transition: border-color var(--transicion);
+  }
+
+  .campo input:focus,
+  .campo textarea:focus {
+    border-color: var(--accent);
+    outline: none;
+  }
+
+  .campo textarea {
+    resize: vertical;
+  }
+
+  .campo__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+  }
+
+  .campo__o {
+    font-size: 0.8rem;
+    color: var(--ink-faint);
+  }
+
+  .enlace-boton {
+    appearance: none;
+    background: none;
+    border: 0;
+    padding: 0;
+    font-family: var(--font-body);
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+    text-decoration-color: var(--line);
+    cursor: pointer;
+    transition: color var(--transicion);
+  }
+
+  .enlace-boton:hover {
+    color: var(--accent-deep);
+  }
+
+  @media (max-width: 48rem) {
+    .contacto {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

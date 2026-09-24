@@ -1,0 +1,136 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import ObraGrid from '@/components/ObraGrid.astro';
+import Flecha from '@/components/Flecha.astro';
+import { otroIdioma, ruta, rutaDe, useT, type Lang } from '@/i18n/utils';
+import {
+  descripcionColeccion,
+  nombreColeccion,
+  obrasDeColeccion,
+  subcolecciones,
+  type Coleccion,
+} from '@/lib/obras';
+import { getEntry } from 'astro:content';
+
+interface Props {
+  coleccion: Coleccion;
+  lang: Lang;
+}
+
+const { coleccion, lang } = Astro.props;
+const t = useT(lang);
+
+const nombre = nombreColeccion(coleccion, lang);
+const descripcion = descripcionColeccion(coleccion, lang);
+// Incluye la obra de sus subseries: un Porsche cuenta como coche.
+const obras = await obrasDeColeccion(coleccion.id);
+const hijas = await subcolecciones(coleccion.id);
+const madre = coleccion.data.padre ? await getEntry(coleccion.data.padre) : undefined;
+
+const meta =
+  descripcion ??
+  (lang === 'es'
+    ? `Serie "${nombre}" — obra original de Sergio Rivera Martínez.`
+    : `"${nombre}" series — original work by Sergio Rivera Martínez.`);
+---
+
+<Layout
+  lang={lang}
+  titulo={nombre}
+  descripcion={meta}
+  altHref={rutaDe('coleccion', coleccion.id, otroIdioma(lang))}
+>
+  <section class="seccion">
+    <div class="contenedor">
+      <nav class="miga" aria-label="Breadcrumb">
+        <a class="enlace-flecha" href={madre ? rutaDe('coleccion', madre.id, lang) : ruta('obras', lang)}>
+          <Flecha direccion="izquierda" />
+          {madre ? nombreColeccion(madre, lang) : t('obras.titulo')}
+        </a>
+      </nav>
+
+      <header class="portadilla">
+        <p class="rotulo">{t('filtro.serie')}</p>
+        <h1>{nombre}</h1>
+        {descripcion && <p class="portadilla__sub">{descripcion}</p>}
+
+        {
+          hijas.length > 0 && (
+            <div class="subseries">
+              <span class="subseries__rotulo">{t('coleccion.subseries')}</span>
+              <ul class="subseries__lista">
+                {hijas.map((h) => (
+                  <li>
+                    <a class="subseries__enlace" href={rutaDe('coleccion', h.id, lang)}>
+                      {nombreColeccion(h, lang)}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+      </header>
+
+      <ObraGrid obras={obras} lang={lang} prioritarias={4} />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .miga {
+    margin-bottom: 2rem;
+  }
+
+  .portadilla {
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .portadilla__sub {
+    font-size: 1.02rem;
+    color: var(--ink-soft);
+    max-width: 48ch;
+    margin: 0.85rem 0 0;
+  }
+
+  .subseries {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1rem;
+    margin-top: 1.75rem;
+  }
+
+  .subseries__rotulo {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .subseries__lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .subseries__enlace {
+    display: inline-block;
+    padding: 0.4em 0.95em;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    text-decoration: none;
+    transition: border-color var(--transicion), color var(--transicion);
+  }
+
+  .subseries__enlace:hover {
+    border-color: var(--accent);
+    color: var(--accent-deep);
+  }
+</style>

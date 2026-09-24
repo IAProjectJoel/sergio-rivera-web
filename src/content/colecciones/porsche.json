@@ -1,0 +1,9 @@
+{
+  "nombre": "Porsche",
+  "nombre_en": "Porsche",
+  "padre": "coches",
+  "descripcion": "Una obsesión con nombre propio. El 911, el 928, el 944: líneas que no han envejecido y que todavía suenan a domingo y a carretera.",
+  "descripcion_en": "An obsession with a name. The 911, the 928, the 944: lines that never aged and still sound like Sunday and an open road.",
+  "orden": 1,
+  "visible": true
+}

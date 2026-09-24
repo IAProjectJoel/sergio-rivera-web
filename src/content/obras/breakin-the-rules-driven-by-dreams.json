@@ -1,0 +1,20 @@
+{
+  "destacada": false,
+  "titulo": "Breakin the rules · Driven by Dreams",
+  "coleccion": "prints",
+  "tipo": "print",
+  "edicion": "Prueba de autor (P/A) · única",
+  "edicion_en": "Artist's proof (A/P) · unique",
+  "anio": 2026,
+  "tecnica": "Impresión giclée intervenida a mano (técnica mixta)",
+  "tecnica_en": "Hand-finished giclée print (mixed media)",
+  "alto_cm": 40,
+  "ancho_cm": 30,
+  "enmarcada": true,
+  "precio_eur": 150,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/breakin-the-rules-driven-by-dreams-01.jpg"
+  ],
+  "orden": 28
+}

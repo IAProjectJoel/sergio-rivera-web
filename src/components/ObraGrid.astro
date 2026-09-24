@@ -1,0 +1,77 @@
+---
+import ObraCard from './ObraCard.astro';
+import { useT, type Lang } from '@/i18n/utils';
+import { coleccionesVisibles, type Obra } from '@/lib/obras';
+
+interface Props {
+  obras: Obra[];
+  lang: Lang;
+  /** Cuántas tarjetas cargan la imagen de inmediato (las que se ven al abrir). */
+  prioritarias?: number;
+  /** Añade los atributos que necesitan los filtros. */
+  filtrable?: boolean;
+  id?: string;
+}
+
+const { obras, lang, prioritarias = 4, filtrable = false, id } = Astro.props;
+const t = useT(lang);
+
+// Para cada obra, los slugs con los que debe coincidir el filtro de serie:
+// el suyo y el de su serie madre. Así un Porsche sale también en "Coches".
+const colecciones = filtrable ? await coleccionesVisibles() : [];
+const padrePorSlug = new Map(colecciones.map((c) => [c.id, c.data.padre?.id]));
+
+function familiaDe(obra: Obra): string {
+  const propia = obra.data.coleccion?.id;
+  if (!propia) return '';
+  const padre = padrePorSlug.get(propia);
+  return padre ? `${propia} ${padre}` : propia;
+}
+---
+
+{
+  obras.length === 0 ? (
+    <p class="vacio">{t('obras.vacio')}</p>
+  ) : (
+    <ul class="rejilla" id={id} data-rejilla={filtrable ? '' : undefined}>
+      {obras.map((obra, i) => (
+        <li
+          class="rejilla__celda"
+          data-familia={filtrable ? familiaDe(obra) : undefined}
+          data-estado={filtrable ? obra.data.estado : undefined}
+        >
+          <ObraCard obra={obra} lang={lang} prioridad={i < prioritarias} />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .rejilla {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+    gap: clamp(1.5rem, 1rem + 2.5vw, 3.25rem) clamp(1rem, 0.5rem + 2vw, 2.5rem);
+    align-items: start;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .rejilla__celda[hidden] {
+    display: none;
+  }
+
+  .vacio {
+    color: var(--ink-soft);
+    font-style: italic;
+    padding-block: 2rem;
+  }
+
+  @media (max-width: 30rem) {
+    .rejilla {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.75rem 1rem;
+    }
+  }
+</style>

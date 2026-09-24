@@ -1,0 +1,19 @@
+{
+  "titulo": "Gata o cata de vinos",
+  "titulo_en": "Cat or wine tasting",
+  "coleccion": "nostalgia",
+  "anio": 2025,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 41,
+  "ancho_cm": 33,
+  "enmarcada": false,
+  "precio_eur": 990,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/gata-o-cata-de-vinos-01.jpg"
+  ],
+  "destacada": false,
+  "orden": 100,
+  "publicada": false
+}

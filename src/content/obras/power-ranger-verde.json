@@ -1,0 +1,17 @@
+{
+  "destacada": true,
+  "titulo": "Power ranger verde",
+  "coleccion": "nostalgia",
+  "anio": 2023,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 41,
+  "ancho_cm": 33,
+  "enmarcada": false,
+  "precio_eur": 1200,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/power-ranger-verde-01.jpg"
+  ],
+  "orden": 22
+}

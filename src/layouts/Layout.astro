@@ -1,0 +1,105 @@
+---
+import { Font, getImage } from 'astro:assets';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { sitio } from '@/data/sitio';
+import { localeHtml, otroIdioma, type Lang } from '@/i18n/utils';
+import retrato from '@/assets/retrato-sergio.jpg';
+import '@/styles/global.css';
+
+interface Props {
+  lang: Lang;
+  titulo: string;
+  descripcion: string;
+  /** Misma página en el otro idioma, para el selector y el hreflang. */
+  altHref: string;
+  /** Imagen para compartir en redes (ruta absoluta ya resuelta). */
+  imagenSocial?: string;
+  /** La portada usa el <h1> del hero, sin encabezado repetido. */
+  clase?: string;
+}
+
+const { lang, titulo, descripcion, altHref, imagenSocial, clase } = Astro.props;
+
+const tituloCompleto =
+  titulo === sitio.artista ? `${sitio.artista} — ${lang === 'es' ? 'Obra original' : 'Original work'}` : `${titulo} · ${sitio.artista}`;
+
+const canonical = new URL(Astro.url.pathname, sitio.dominio).href;
+const alterna = new URL(altHref, sitio.dominio).href;
+const otro = otroIdioma(lang);
+
+// Toda página lleva imagen al compartirse. Las fichas mandan la de su obra;
+// el resto, el retrato de Sergio en el estudio. Sin esto, la portada pegada
+// en WhatsApp salía como un enlace pelado.
+const porDefecto = (await getImage({ src: retrato, width: 1200, format: 'jpeg', quality: 82 })).src;
+const social = new URL(imagenSocial ?? porDefecto, sitio.dominio).href;
+---
+
+<!doctype html>
+<html lang={localeHtml[lang]}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloCompleto}</title>
+    <meta name="description" content={descripcion} />
+    <link rel="canonical" href={canonical} />
+
+    <link rel="alternate" hreflang={lang} href={canonical} />
+    <link rel="alternate" hreflang={otro} href={alterna} />
+    <link rel="alternate" hreflang="x-default" href={lang === 'es' ? canonical : alterna} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={tituloCompleto} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={localeHtml[lang].replace('-', '_')} />
+    <meta property="og:site_name" content={sitio.artista} />
+    <meta property="og:image" content={social} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#faf8f5" />
+
+    {/* Sin preload a propósito: son 6 ficheros / 220 KB entre los dos
+        alfabetos, y precargarlos obligaría a descargar también los subsets
+        latin-ext que el navegador solo debe pedir si aparece un carácter de
+        ese rango. Astro genera fallbacks con métricas calcadas de Georgia y
+        system-ui, así que la fuente entra por swap sin mover el texto. */}
+    <Font cssVariable="--font-display" />
+    <Font cssVariable="--font-body" />
+
+    <slot name="head" />
+  </head>
+
+  <body class={clase}>
+    <a class="saltar" href="#contenido">
+      {lang === 'es' ? 'Saltar al contenido' : 'Skip to content'}
+    </a>
+
+    <Header lang={lang} altHref={altHref} />
+
+    <main id="contenido">
+      <slot />
+    </main>
+
+    <Footer lang={lang} />
+  </body>
+</html>
+
+<style>
+  .saltar {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background: var(--ink);
+    color: var(--bone);
+    font-size: 0.875rem;
+    text-decoration: none;
+  }
+
+  .saltar:focus {
+    left: 0;
+  }
+</style>

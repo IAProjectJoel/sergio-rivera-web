@@ -1,0 +1,16 @@
+{
+  "destacada": false,
+  "titulo": "Nike caldera y Ripster de Street Sharks",
+  "coleccion": "sneakers",
+  "anio": 2025,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 33,
+  "ancho_cm": 41,
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/nike-caldera-y-ripster-de-street-sharks-01.jpg"
+  ],
+  "orden": 17
+}

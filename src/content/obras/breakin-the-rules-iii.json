@@ -1,0 +1,17 @@
+{
+  "destacada": false,
+  "titulo": "Breakin the rules III",
+  "coleccion": "coches",
+  "anio": 2025,
+  "tecnica": "Técnica mixta sobre lienzo",
+  "tecnica_en": "Mixed media on canvas",
+  "alto_cm": 60,
+  "ancho_cm": 73,
+  "enmarcada": true,
+  "precio_eur": 800,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/breakin-the-rules-iii-01.jpg"
+  ],
+  "orden": 13
+}

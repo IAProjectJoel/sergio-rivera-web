@@ -1,0 +1,17 @@
+{
+  "destacada": true,
+  "titulo": "Medicine Crow",
+  "coleccion": "nativos-americanos",
+  "anio": 2026,
+  "tecnica": "Técnica mixta sobre madera (óleo y acrílicos)",
+  "tecnica_en": "Mixed media on wood (oil and acrylics)",
+  "alto_cm": 71,
+  "ancho_cm": 95,
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/medicine-crow-01.jpg",
+    "/src/assets/obras/medicine-crow-02.jpg"
+  ],
+  "orden": 31
+}

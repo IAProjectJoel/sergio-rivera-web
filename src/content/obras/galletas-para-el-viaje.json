@@ -1,0 +1,19 @@
+{
+  "titulo": "Galletas para el viaje",
+  "titulo_en": "Biscuits for the road",
+  "coleccion": "nostalgia",
+  "anio": 2024,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 35,
+  "ancho_cm": 41,
+  "enmarcada": false,
+  "precio_eur": 800,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/galletas-para-el-viaje-01.jpg"
+  ],
+  "destacada": false,
+  "orden": 100,
+  "publicada": false
+}

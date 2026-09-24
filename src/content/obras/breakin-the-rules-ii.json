@@ -1,0 +1,17 @@
+{
+  "destacada": false,
+  "titulo": "Breakin the rules II",
+  "coleccion": "coches",
+  "anio": 2025,
+  "tecnica": "Técnica mixta sobre lienzo",
+  "tecnica_en": "Mixed media on canvas",
+  "alto_cm": 61,
+  "ancho_cm": 46,
+  "enmarcada": true,
+  "precio_eur": 800,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/breakin-the-rules-ii-01.jpg"
+  ],
+  "orden": 12
+}

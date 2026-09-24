@@ -1,0 +1,15 @@
+{
+  "destacada": false,
+  "titulo": "Eduardo Manostijeras",
+  "coleccion": "nostalgia",
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 55,
+  "ancho_cm": 46,
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/eduardo-manostijeras-01.jpg"
+  ],
+  "orden": 25
+}

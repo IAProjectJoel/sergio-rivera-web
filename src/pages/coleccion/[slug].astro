@@ -1,0 +1,10 @@
+---
+import ColeccionView from "@/views/ColeccionView.astro";
+import { rutasDeColecciones } from "@/lib/rutas";
+import type { Coleccion } from "@/lib/obras";
+
+export const getStaticPaths = rutasDeColecciones;
+
+const { coleccion } = Astro.props as { coleccion: Coleccion };
+---
+<ColeccionView coleccion={coleccion} lang="es" />

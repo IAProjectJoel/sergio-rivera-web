@@ -1,0 +1,17 @@
+# Cómo construir la web. Al estar aquí, Netlify lo lee del repositorio y no
+# depende de que nadie rellene bien los campos del panel.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Astro 7 exige Node >= 22.12. Sin fijarlo, Netlify usa su versión por
+  # defecto y la compilación podría fallar el día que la cambien.
+  NODE_VERSION = "22"
+
+# El panel de administración no debe acabar en Google.
+[[headers]]
+  for = "/admin/*"
+  [headers.values]
+    X-Robots-Tag = "noindex"

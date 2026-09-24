@@ -1,0 +1,97 @@
+---
+import { sitio } from '@/data/sitio';
+import { ruta, useT, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useT(lang);
+const anio = new Date().getFullYear();
+---
+
+<footer class="pie">
+  <div class="contenedor pie__grid">
+    <div class="pie__marca">
+      <p class="pie__nombre">{sitio.artista}</p>
+      <p class="pie__nota">{t('footer.obraOriginal')} · Madrid</p>
+    </div>
+
+    <nav class="pie__nav" aria-label={t('nav.menu')}>
+      <a href={ruta('obras', lang)}>{t('nav.obras')}</a>
+      <a href={ruta('sobreMi', lang)}>{t('nav.sobreMi')}</a>
+      <a href={ruta('contacto', lang)}>{t('nav.contacto')}</a>
+    </nav>
+
+    <div class="pie__contacto">
+      <a href={sitio.instagram.url} target="_blank" rel="noopener me">{sitio.instagram.usuario}</a>
+      <a href={`mailto:${sitio.email}`}>{sitio.email}</a>
+    </div>
+  </div>
+
+  <div class="contenedor pie__legal">
+    <p>© {anio} {sitio.artista}. {t('footer.derechos')}</p>
+  </div>
+</footer>
+
+<style>
+  .pie {
+    border-top: 1px solid var(--line);
+    padding-block: clamp(2.5rem, 2rem + 2vw, 4rem) 1.75rem;
+    margin-top: clamp(3rem, 2rem + 4vw, 6rem);
+  }
+
+  .pie__grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 2rem 3rem;
+  }
+
+  .pie__nombre {
+    font-family: var(--font-display);
+    font-size: 1.35rem;
+    margin: 0 0 0.2rem;
+  }
+
+  .pie__nota {
+    font-size: 0.75rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin: 0;
+  }
+
+  .pie__nav,
+  .pie__contacto {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    font-size: 0.875rem;
+  }
+
+  .pie__nav a,
+  .pie__contacto a {
+    text-decoration: none;
+    color: var(--ink-soft);
+    transition: color var(--transicion);
+  }
+
+  .pie__nav a:hover,
+  .pie__contacto a:hover {
+    color: var(--accent-deep);
+  }
+
+  .pie__legal {
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .pie__legal p {
+    margin: 0;
+    font-size: 0.75rem;
+    color: var(--ink-faint);
+  }
+</style>

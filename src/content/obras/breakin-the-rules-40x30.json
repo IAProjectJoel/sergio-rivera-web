@@ -1,0 +1,20 @@
+{
+  "destacada": false,
+  "titulo": "Breakin the rules",
+  "coleccion": "prints",
+  "tipo": "print",
+  "edicion": "Edición de 10",
+  "edicion_en": "Edition of 10",
+  "anio": 2026,
+  "tecnica": "Impresión giclée",
+  "tecnica_en": "Giclée print",
+  "alto_cm": 40,
+  "ancho_cm": 30,
+  "enmarcada": false,
+  "precio_eur": 40,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/breakin-the-rules-40x30-01.jpg"
+  ],
+  "orden": 30
+}

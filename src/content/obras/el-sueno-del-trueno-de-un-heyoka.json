@@ -1,0 +1,14 @@
+{
+  "destacada": false,
+  "titulo": "El sueño del trueno de un heyoka",
+  "coleccion": "nativos-americanos",
+  "anio": 2017,
+  "tecnica": "Óleo y acrílicos sobre lienzo",
+  "tecnica_en": "Oil and acrylics on canvas",
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/el-sueno-del-trueno-de-un-heyoka-01.jpg"
+  ],
+  "orden": 36
+}

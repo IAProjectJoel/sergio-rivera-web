@@ -1,0 +1,17 @@
+{
+  "destacada": false,
+  "titulo": "Vintage legends II",
+  "coleccion": "coches",
+  "anio": 2026,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 33,
+  "ancho_cm": 41,
+  "enmarcada": false,
+  "precio_eur": 600,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/vintage-legends-ii-01.jpg"
+  ],
+  "orden": 6
+}

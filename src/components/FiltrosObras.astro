@@ -1,0 +1,312 @@
+---
+import { nombreColeccion, type Coleccion } from '@/lib/obras';
+import { useT, type Lang } from '@/i18n/utils';
+
+interface Props {
+  /** Todas las series visibles, principales y subseries. */
+  colecciones: Coleccion[];
+  lang: Lang;
+  total: number;
+}
+
+const { colecciones, lang, total } = Astro.props;
+const t = useT(lang);
+
+const raiz = colecciones.filter((c) => !c.data.padre);
+
+const series = [
+  { valor: '', etiqueta: t('filtro.todas') },
+  ...raiz.map((c) => ({ valor: c.id, etiqueta: nombreColeccion(c, lang) })),
+];
+
+// Las subseries no compiten con las principales: aparecen solo cuando se
+// elige su madre, para no llenar la barra de chips desde el primer momento.
+const subseries = colecciones
+  .filter((c) => c.data.padre)
+  .map((c) => ({
+    valor: c.id,
+    padre: c.data.padre!.id,
+    etiqueta: nombreColeccion(c, lang),
+  }));
+
+const estados = [
+  { valor: '', etiqueta: t('filtro.estado.todas') },
+  { valor: 'disponible', etiqueta: t('filtro.estado.disponible') },
+  { valor: 'vendida', etiqueta: t('filtro.estado.vendida') },
+];
+---
+
+<div class="filtros" data-filtros>
+  <div class="filtros__fila">
+    {
+      series.length > 1 && (
+        <div class="filtros__grupo" role="group" aria-label={t('filtro.serie')}>
+          <span class="filtros__rotulo">{t('filtro.serie')}</span>
+          <div class="filtros__opciones">
+            {series.map((s) => (
+              <button
+                type="button"
+                class="chip"
+                data-filtro="serie"
+                data-valor={s.valor}
+                aria-pressed={s.valor === '' ? 'true' : 'false'}
+              >
+                {s.etiqueta}
+              </button>
+            ))}
+          </div>
+        </div>
+      )
+    }
+
+    <div class="filtros__grupo" role="group" aria-label={t('filtro.estado')}>
+      <span class="filtros__rotulo">{t('filtro.estado')}</span>
+      <div class="filtros__opciones">
+        {
+          estados.map((e) => (
+            <button
+              type="button"
+              class="chip"
+              data-filtro="estado"
+              data-valor={e.valor}
+              aria-pressed={e.valor === '' ? 'true' : 'false'}
+            >
+              {e.etiqueta}
+            </button>
+          ))
+        }
+      </div>
+    </div>
+
+    <p class="filtros__contador" data-contador aria-live="polite">
+      <span data-contador-n>{total}</span>{' '}
+      <span data-contador-una hidden>{t('obras.contador.una')}</span><span data-contador-varias
+        >{t('obras.contador.varias')}</span
+      >
+    </p>
+  </div>
+
+  {
+    subseries.length > 0 && (
+      <div class="filtros__sub" data-subfila hidden>
+        <span class="filtros__rotulo">{t('coleccion.subseries')}</span>
+        <div class="filtros__opciones">
+          {subseries.map((s) => (
+            <button
+              type="button"
+              class="chip chip--sub"
+              data-filtro="serie"
+              data-valor={s.valor}
+              data-padre={s.padre}
+              aria-pressed="false"
+              hidden
+            >
+              {s.etiqueta}
+            </button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  // Filtrado en cliente: el catálogo entero ya está en la página, así que
+  // cambiar de filtro es instantáneo y no gasta una petición.
+  const panel = document.querySelector<HTMLElement>('[data-filtros]');
+  const rejilla = document.querySelector<HTMLElement>('[data-rejilla]');
+
+  if (panel && rejilla) {
+    const celdas = Array.from(rejilla.querySelectorAll<HTMLElement>('.rejilla__celda'));
+    const nEl = panel.querySelector<HTMLElement>('[data-contador-n]');
+    const unaEl = panel.querySelector<HTMLElement>('[data-contador-una]');
+    const variasEl = panel.querySelector<HTMLElement>('[data-contador-varias]');
+    const subfila = panel.querySelector<HTMLElement>('[data-subfila]');
+    const subchips = Array.from(panel.querySelectorAll<HTMLButtonElement>('[data-padre]'));
+
+    const activo: Record<string, string> = { serie: '', estado: '' };
+
+    /** Serie madre del chip activo, o el propio si es principal. */
+    function ramaActiva(): string {
+      const chip = subchips.find((c) => c.dataset.valor === activo.serie);
+      return chip?.dataset.padre ?? activo.serie;
+    }
+
+    function aplicar() {
+      let visibles = 0;
+
+      for (const celda of celdas) {
+        // data-familia trae el slug de la obra y el de su serie madre.
+        const familia = (celda.dataset.familia ?? '').split(' ').filter(Boolean);
+        const estado = celda.dataset.estado ?? '';
+        const coincide =
+          (activo.serie === '' || familia.includes(activo.serie)) &&
+          (activo.estado === '' || estado === activo.estado);
+
+        celda.hidden = !coincide;
+        if (coincide) visibles++;
+      }
+
+      if (nEl) nEl.textContent = String(visibles);
+      if (unaEl) unaEl.hidden = visibles !== 1;
+      if (variasEl) variasEl.hidden = visibles === 1;
+
+      // Las subseries de la rama elegida se revelan; el resto se esconden.
+      const rama = ramaActiva();
+      let algunaSub = false;
+      for (const chip of subchips) {
+        const mostrar = chip.dataset.padre === rama;
+        chip.hidden = !mostrar;
+        if (mostrar) algunaSub = true;
+      }
+      if (subfila) subfila.hidden = !algunaSub;
+
+      // Deja el estado en la URL para que el filtro se pueda compartir
+      // y sobreviva a recargar o volver atrás.
+      const params = new URLSearchParams();
+      if (activo.serie) params.set('serie', activo.serie);
+      if (activo.estado) params.set('estado', activo.estado);
+      const query = params.toString();
+      history.replaceState(null, '', query ? `?${query}` : location.pathname);
+    }
+
+    function marcar(tipo: string, valor: string) {
+      activo[tipo] = valor;
+      for (const boton of panel!.querySelectorAll<HTMLButtonElement>(
+        `[data-filtro="${tipo}"]`,
+      )) {
+        boton.setAttribute('aria-pressed', boton.dataset.valor === valor ? 'true' : 'false');
+      }
+      // Elegir una subserie deja marcada también su madre, para que se vea
+      // dónde estás: Coches › Porsche.
+      if (tipo === 'serie') {
+        const chip = subchips.find((c) => c.dataset.valor === valor);
+        if (chip?.dataset.padre) {
+          panel!
+            .querySelector(`[data-filtro="serie"][data-valor="${chip.dataset.padre}"]`)
+            ?.setAttribute('aria-pressed', 'true');
+        }
+      }
+    }
+
+    panel.addEventListener('click', (evento) => {
+      const boton = (evento.target as HTMLElement).closest<HTMLButtonElement>('[data-filtro]');
+      if (!boton) return;
+      marcar(boton.dataset.filtro!, boton.dataset.valor ?? '');
+      aplicar();
+    });
+
+    // Estado inicial desde la URL (?serie=porsche&estado=vendida)
+    const inicial = new URLSearchParams(location.search);
+    const serie = inicial.get('serie');
+    const estado = inicial.get('estado');
+    if (serie) marcar('serie', serie);
+    if (estado) marcar('estado', estado);
+    aplicar();
+  }
+</script>
+
+<style>
+  .filtros {
+    padding-block: 1.25rem;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3.25rem);
+  }
+
+  .filtros__fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem clamp(1.5rem, 1rem + 2vw, 3rem);
+  }
+
+  .filtros__grupo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.85rem;
+  }
+
+  .filtros__rotulo {
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  .filtros__opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+
+  .filtros__sub {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 0.85rem;
+    margin-top: 0.9rem;
+    padding-top: 0.9rem;
+    border-top: 1px dashed var(--line-soft);
+  }
+
+  .filtros__sub[hidden] {
+    display: none;
+  }
+
+  .chip {
+    appearance: none;
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.4em 0.95em;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: background var(--transicion), color var(--transicion),
+      border-color var(--transicion);
+  }
+
+  .chip[hidden] {
+    display: none;
+  }
+
+  .chip:hover {
+    border-color: var(--ink-faint);
+    color: var(--ink);
+  }
+
+  .chip[aria-pressed='true'] {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--bone);
+  }
+
+  /* La subserie se distingue de la principal aunque esté activa. */
+  .chip--sub[aria-pressed='true'] {
+    background: var(--accent-deep);
+    border-color: var(--accent-deep);
+  }
+
+  .filtros__contador {
+    margin: 0;
+    margin-left: auto;
+    font-size: 0.78rem;
+    color: var(--ink-faint);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .filtros__contador [hidden] {
+    display: none;
+  }
+
+  @media (max-width: 40rem) {
+    .filtros__contador {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+</style>

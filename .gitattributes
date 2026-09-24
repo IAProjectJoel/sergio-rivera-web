@@ -1,0 +1,12 @@
+# Saltos de línea siempre iguales en el repositorio. Sin esto, lo que se
+# edita en Windows y lo que guarda el panel desde GitHub salen como si fueran
+# archivos distintos enteros.
+* text=auto eol=lf
+
+# Binarios: que git no intente tocarlos.
+*.jpg binary
+*.jpeg binary
+*.png binary
+*.webp binary
+*.avif binary
+*.woff2 binary

@@ -1,0 +1,50 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import ObraGrid from '@/components/ObraGrid.astro';
+import FiltrosObras from '@/components/FiltrosObras.astro';
+import { otroIdioma, ruta, useT, type Lang } from '@/i18n/utils';
+import { coleccionesVisibles, todasLasObras } from '@/lib/obras';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useT(lang);
+
+const obras = await todasLasObras();
+const colecciones = await coleccionesVisibles();
+---
+
+<Layout
+  lang={lang}
+  titulo={t('obras.titulo')}
+  descripcion={t('meta.obras.desc')}
+  altHref={ruta('obras', otroIdioma(lang))}
+>
+  <section class="seccion">
+    <div class="contenedor">
+      <header class="portadilla">
+        <h1>{t('obras.titulo')}</h1>
+        <p class="portadilla__sub">{t('obras.subtitulo')}</p>
+      </header>
+
+      <FiltrosObras colecciones={colecciones} lang={lang} total={obras.length} />
+
+      <ObraGrid obras={obras} lang={lang} prioritarias={4} filtrable id="catalogo" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .portadilla {
+    margin-bottom: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .portadilla__sub {
+    font-size: 1.02rem;
+    color: var(--ink-soft);
+    max-width: 42ch;
+    margin: 0.75rem 0 0;
+  }
+</style>

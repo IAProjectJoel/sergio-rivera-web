@@ -1,0 +1,175 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection, render } from 'astro:content';
+import Layout from '@/layouts/Layout.astro';
+import Flecha from '@/components/Flecha.astro';
+import { sitio } from '@/data/sitio';
+import { otroIdioma, ruta, useT, type Lang } from '@/i18n/utils';
+import { resolverImagen } from '@/lib/obras';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = useT(lang);
+
+const paginas = await getCollection('paginas');
+const pagina =
+  paginas.find((p) => p.data.clave === 'sobre-mi' && p.data.lang === lang) ??
+  paginas.find((p) => p.data.clave === 'sobre-mi' && p.data.lang === 'es');
+
+const { Content } = pagina ? await render(pagina) : { Content: null };
+const retrato = pagina?.data.retrato ? resolverImagen(pagina.data.retrato) : undefined;
+const exposiciones = pagina?.data.exposiciones ?? [];
+---
+
+<Layout
+  lang={lang}
+  titulo={t('nav.sobreMi')}
+  descripcion={t('meta.sobreMi.desc')}
+  altHref={ruta('sobreMi', otroIdioma(lang))}
+>
+  <section class="seccion">
+    <div class="contenedor bio">
+      <div class="bio__texto">
+        <p class="rotulo">{pagina?.data.subtitulo ?? (lang === 'es' ? 'Pintor · Madrid' : 'Painter · Madrid')}</p>
+        <h1 class="bio__titulo">{pagina?.data.titulo ?? sitio.artista}</h1>
+
+        <div class="prosa">
+          {Content && <Content />}
+        </div>
+
+        {
+          exposiciones.length > 0 && (
+            <div class="exposiciones">
+              <h2 class="exposiciones__titulo">
+                {lang === 'es' ? 'Algunas exposiciones y reconocimientos' : 'Selected exhibitions and awards'}
+              </h2>
+              <ul class="exposiciones__lista">
+                {exposiciones.map((e) => (
+                  <li>{e}</li>
+                ))}
+              </ul>
+            </div>
+          )
+        }
+
+        <div class="bio__acciones">
+          <a class="boton" href={ruta('obras', lang)}>{t('inicio.verTodo')}</a>
+          <a class="enlace-flecha" href={ruta('contacto', lang)}>
+            {t('nav.contacto')}
+            <Flecha />
+          </a>
+        </div>
+      </div>
+
+      {
+        retrato && (
+          <figure class="bio__retrato">
+            <Image
+              src={retrato}
+              alt={sitio.artista}
+              widths={[360, 560, 840]}
+              sizes="(max-width: 52rem) 80vw, 24rem"
+              quality={84}
+              loading="eager"
+            />
+          </figure>
+        )
+      }
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .bio {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.6fr);
+    gap: clamp(2rem, 1rem + 5vw, 4.5rem);
+    align-items: start;
+  }
+
+  .bio__titulo {
+    margin-bottom: 2rem;
+  }
+
+  .prosa {
+    max-width: var(--ancho-texto);
+    font-size: 1.02rem;
+    color: var(--ink-soft);
+  }
+
+  .prosa :global(p) {
+    margin-bottom: 1.15em;
+  }
+
+  /* El primer párrafo entra más grande: da entrada al texto. */
+  .prosa :global(p:first-of-type) {
+    font-family: var(--font-display);
+    font-size: clamp(1.3rem, 1.1rem + 1vw, 1.7rem);
+    line-height: 1.4;
+    color: var(--ink);
+    margin-bottom: 1.5em;
+  }
+
+  .exposiciones {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--line);
+  }
+
+  .exposiciones__titulo {
+    font-size: 0.72rem;
+    font-family: var(--font-body);
+    font-weight: 500;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 1.25rem;
+  }
+
+  .exposiciones__lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: var(--ancho-texto);
+  }
+
+  .exposiciones__lista li {
+    padding-block: 0.6rem;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 0.9rem;
+    color: var(--ink-soft);
+  }
+
+  .bio__acciones {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem 1.75rem;
+    margin-top: 2.75rem;
+  }
+
+  .bio__retrato {
+    margin: 0;
+    position: sticky;
+    top: 6rem;
+  }
+
+  .bio__retrato img {
+    width: 100%;
+  }
+
+  @media (max-width: 52rem) {
+    .bio {
+      grid-template-columns: 1fr;
+    }
+
+    .bio__retrato {
+      position: static;
+      order: -1;
+      max-width: 20rem;
+    }
+  }
+</style>

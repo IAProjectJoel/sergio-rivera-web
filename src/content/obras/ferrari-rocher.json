@@ -1,0 +1,19 @@
+{
+  "titulo": "Ferrari Rocher",
+  "titulo_en": "Ferrari Rocher",
+  "coleccion": "nostalgia",
+  "anio": 2024,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 33,
+  "ancho_cm": 41,
+  "enmarcada": false,
+  "precio_eur": 990,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/ferrari-rocher-01.jpg"
+  ],
+  "destacada": false,
+  "orden": 100,
+  "publicada": false
+}

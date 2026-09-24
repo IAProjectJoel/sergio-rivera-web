@@ -1,0 +1,16 @@
+{
+  "destacada": false,
+  "titulo": "Breakin the rules IV",
+  "coleccion": "coches",
+  "anio": 2026,
+  "tecnica": "Técnica mixta sobre madera",
+  "tecnica_en": "Mixed media on wood",
+  "alto_cm": 71,
+  "ancho_cm": 95,
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/breakin-the-rules-iv-01.jpg"
+  ],
+  "orden": 14
+}

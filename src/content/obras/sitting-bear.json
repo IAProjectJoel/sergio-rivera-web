@@ -1,0 +1,15 @@
+{
+  "destacada": false,
+  "titulo": "Sitting Bear",
+  "coleccion": "nativos-americanos",
+  "anio": 2017,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/sitting-bear-01.jpg",
+    "/src/assets/obras/sitting-bear-02.jpg"
+  ],
+  "orden": 35
+}

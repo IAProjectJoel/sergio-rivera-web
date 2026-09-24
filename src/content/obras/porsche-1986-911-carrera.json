@@ -1,0 +1,17 @@
+{
+  "destacada": true,
+  "titulo": "Porsche 1986 911 carrera",
+  "coleccion": "porsche",
+  "anio": 2026,
+  "tecnica": "Óleo sobre lienzo. Técnica mixta",
+  "tecnica_en": "Oil on canvas. Mixed media",
+  "alto_cm": 92,
+  "ancho_cm": 65,
+  "enmarcada": true,
+  "precio_eur": 2000,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/porsche-1986-911-carrera-01.jpg"
+  ],
+  "orden": 1
+}

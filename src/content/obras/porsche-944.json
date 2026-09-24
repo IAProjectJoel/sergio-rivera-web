@@ -1,0 +1,17 @@
+{
+  "destacada": false,
+  "titulo": "Porsche 944",
+  "coleccion": "porsche",
+  "anio": 2024,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 55,
+  "ancho_cm": 45,
+  "enmarcada": false,
+  "precio_eur": 450,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/porsche-944-01.jpg"
+  ],
+  "orden": 10
+}

@@ -1,0 +1,16 @@
+{
+  "destacada": false,
+  "titulo": "Harley-Davidson heritage softail 90s",
+  "coleccion": "motos",
+  "anio": 2025,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 92,
+  "ancho_cm": 65,
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/harley-davidson-heritage-softail-90s-01.jpg"
+  ],
+  "orden": 21
+}

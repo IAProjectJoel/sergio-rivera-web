@@ -1,0 +1,17 @@
+{
+  "destacada": false,
+  "titulo": "Breakin the rules V",
+  "coleccion": "coches",
+  "anio": 2025,
+  "tecnica": "Técnica mixta sobre madera",
+  "tecnica_en": "Mixed media on wood",
+  "alto_cm": 71,
+  "ancho_cm": 95,
+  "enmarcada": false,
+  "precio_eur": 800,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/breakin-the-rules-v-01.jpg"
+  ],
+  "orden": 15
+}

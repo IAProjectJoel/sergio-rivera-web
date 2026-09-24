@@ -1,0 +1,16 @@
+{
+  "destacada": false,
+  "titulo": "Porsche 964 90s",
+  "coleccion": "porsche",
+  "anio": 2024,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 92,
+  "ancho_cm": 65,
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/porsche-964-90s-01.jpg"
+  ],
+  "orden": 3
+}

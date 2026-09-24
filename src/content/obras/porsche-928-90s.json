@@ -1,0 +1,17 @@
+{
+  "destacada": false,
+  "titulo": "Porsche 928 90s",
+  "coleccion": "porsche",
+  "anio": 2024,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 92,
+  "ancho_cm": 65,
+  "enmarcada": false,
+  "precio_eur": 2000,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/porsche-928-90s-01.jpg"
+  ],
+  "orden": 2
+}

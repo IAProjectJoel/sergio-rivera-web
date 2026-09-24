@@ -1,0 +1,298 @@
+---
+import { getImage } from 'astro:assets';
+import Layout from '@/layouts/Layout.astro';
+import EstadoObra from '@/components/EstadoObra.astro';
+import ConsultaObra from '@/components/ConsultaObra.astro';
+import ObraGrid from '@/components/ObraGrid.astro';
+import Flecha from '@/components/Flecha.astro';
+import Visor from '@/components/Visor.astro';
+import { sitio } from '@/data/sitio';
+import { campo, otroIdioma, ruta, rutaDe, useT, type Lang } from '@/i18n/utils';
+import {
+  descripcionDe,
+  esPrint,
+  imagenesDe,
+  medidas,
+  nombreColeccion,
+  obrasRelacionadas,
+  precio,
+  tecnicaDe,
+  textoAlt,
+  tituloDe,
+  type Obra,
+} from '@/lib/obras';
+import { getEntry } from 'astro:content';
+
+interface Props {
+  obra: Obra;
+  lang: Lang;
+}
+
+const { obra, lang } = Astro.props;
+const t = useT(lang);
+
+const titulo = tituloDe(obra, lang);
+const tecnica = tecnicaDe(obra, lang);
+const descripcion = descripcionDe(obra, lang);
+const importe = precio(obra, lang);
+const imagenes = imagenesDe(obra);
+const alt = textoAlt(obra, lang);
+const edicion = campo(obra.data.edicion, obra.data.edicion_en, lang);
+
+const serie = obra.data.coleccion ? await getEntry(obra.data.coleccion) : undefined;
+const relacionadas = await obrasRelacionadas(obra, 3);
+
+const vendida = obra.data.estado === 'vendida';
+const disponible = obra.data.estado === 'disponible';
+
+// Imagen absoluta para redes sociales y para los datos estructurados.
+const social = imagenes[0]
+  ? (await getImage({ src: imagenes[0], width: 1200, format: 'jpeg', quality: 85 })).src
+  : undefined;
+
+const med = medidas(obra, lang);
+const detalle = [tecnica.toLowerCase(), med].filter(Boolean).join(', ');
+
+const metaDesc =
+  descripcion?.slice(0, 155) ??
+  (lang === 'es'
+    ? `${titulo}, ${detalle}. Obra original de ${sitio.artista}.`
+    : `${titulo}, ${detalle}. Original work by ${sitio.artista}.`);
+
+// Datos estructurados: así Google entiende que esto es una obra de arte
+// concreta, con su precio y su disponibilidad, y puede mostrarla enriquecida.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'VisualArtwork',
+  name: titulo,
+  image: social ? new URL(social, sitio.dominio).href : undefined,
+  description: metaDesc,
+  artform: tecnica,
+  // artMedium ya dice el soporte ("técnica mixta sobre madera"). Había aquí
+  // un artworkSurface fijo a "Lienzo" que mentía en todo lo pintado sobre
+  // madera o papel; es mejor no declararlo que declararlo mal.
+  artMedium: tecnica,
+  ...(med && {
+    height: { '@type': 'Distance', name: `${obra.data.alto_cm} cm` },
+    width: { '@type': 'Distance', name: `${obra.data.ancho_cm} cm` },
+  }),
+  dateCreated: obra.data.anio ? String(obra.data.anio) : undefined,
+  creator: {
+    '@type': 'Person',
+    name: sitio.artista,
+    url: sitio.dominio,
+    sameAs: [sitio.instagram.url],
+  },
+  // La oferta solo se declara con el mismo precio que se ve en la página.
+  // Las vendidas no enseñan precio, así que tampoco se le da a Google.
+  ...(obra.data.precio_eur !== undefined &&
+    !vendida && {
+      offers: {
+        '@type': 'Offer',
+        price: obra.data.precio_eur,
+        priceCurrency: 'EUR',
+        availability: disponible
+          ? 'https://schema.org/InStock'
+          : 'https://schema.org/LimitedAvailability',
+        url: new URL(Astro.url.pathname, sitio.dominio).href,
+        seller: { '@type': 'Person', name: sitio.artista },
+      },
+    }),
+};
+
+const ficha = [
+  {
+    etiqueta: t('obra.tipo'),
+    valor: esPrint(obra) ? t('obra.lamina') : t('obra.unica'),
+  },
+  // La edición matiza al print: una prueba de autor es única y una tirada
+  // de 10 no lo es. Sin este dato no se puede decir una cosa ni la otra.
+  edicion ? { etiqueta: t('obra.edicion'), valor: edicion } : null,
+  { etiqueta: t('obra.tecnica'), valor: tecnica },
+  med ? { etiqueta: t('obra.medidas'), valor: med } : null,
+  obra.data.anio ? { etiqueta: t('obra.anio'), valor: String(obra.data.anio) } : null,
+  serie
+    ? {
+        etiqueta: t('obra.serie'),
+        valor: nombreColeccion(serie, lang),
+        href: rutaDe('coleccion', serie.id, lang),
+      }
+    : null,
+  { etiqueta: '', valor: obra.data.enmarcada ? t('obra.enmarcada') : t('obra.sinEnmarcar') },
+].filter((f): f is { etiqueta: string; valor: string; href?: string } => f !== null);
+---
+
+<Layout
+  lang={lang}
+  titulo={titulo}
+  descripcion={metaDesc}
+  altHref={rutaDe('obra', obra.id, otroIdioma(lang))}
+  imagenSocial={social}
+>
+  <script
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(jsonLd)}
+    is:inline
+  />
+
+  <div class="contenedor">
+    <nav class="miga" aria-label="Breadcrumb">
+      <a class="enlace-flecha" href={ruta('obras', lang)}>
+        <Flecha direccion="izquierda" />
+        {t('obra.volver')}
+      </a>
+    </nav>
+  </div>
+
+  <article class="contenedor obra">
+    <div class="obra__visual">
+      <Visor imagenes={imagenes} alt={alt} lang={lang} />
+    </div>
+
+    <div class="obra__info">
+      <header class="obra__cabecera">
+        <h1 class="obra__titulo">{titulo}</h1>
+        <EstadoObra estado={obra.data.estado} lang={lang} variante="linea" />
+      </header>
+
+      {/* "Consultar precio" solo tiene sentido si se puede comprar: en una
+          obra que no está en venta sería una invitación falsa. */}
+      {
+        (importe || disponible) && (
+          <p class="obra__precio">
+            {importe ? (
+              <span class="obra__importe">{importe}</span>
+            ) : (
+              <span class="obra__consultar">{t('obra.consultar')}</span>
+            )}
+          </p>
+        )
+      }
+
+      {descripcion && <p class="obra__desc">{descripcion}</p>}
+
+      <dl class="obra__ficha">
+        {
+          ficha.map((f) => (
+            <div class="obra__fila">
+              <dt>{f.etiqueta}</dt>
+              <dd>{f.href ? <a href={f.href}>{f.valor}</a> : f.valor}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <ConsultaObra obra={obra} lang={lang} />
+    </div>
+  </article>
+
+  {
+    relacionadas.length > 0 && (
+      <section class="seccion">
+        <div class="contenedor">
+          <div class="cabecera-seccion">
+            <h2>{t('obra.tambien')}</h2>
+            <a class="enlace-flecha" href={ruta('obras', lang)}>
+              {t('inicio.verTodo')}
+              <Flecha />
+            </a>
+          </div>
+          <ObraGrid obras={relacionadas} lang={lang} prioritarias={0} />
+        </div>
+      </section>
+    )
+  }
+</Layout>
+
+<style>
+  .miga {
+    padding-block: 1.75rem 0;
+  }
+
+  .obra {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: clamp(2rem, 1rem + 5vw, 5rem);
+    align-items: start;
+    padding-block: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+  }
+
+  .obra__info {
+    position: sticky;
+    top: 6rem;
+  }
+
+  .obra__cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .obra__titulo {
+    font-size: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .obra__precio {
+    margin: 0 0 1.75rem;
+  }
+
+  .obra__importe {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .obra__consultar {
+    font-size: 1rem;
+    color: var(--ink-soft);
+  }
+
+  .obra__desc {
+    color: var(--ink-soft);
+    margin-bottom: 2rem;
+  }
+
+  .obra__ficha {
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .obra__fila {
+    display: flex;
+    gap: 1.5rem;
+    padding-block: 0.7rem;
+    border-bottom: 1px solid var(--line-soft);
+    font-size: 0.875rem;
+  }
+
+  .obra__fila dt {
+    flex: 0 0 7.5rem;
+    color: var(--ink-faint);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding-top: 0.18em;
+  }
+
+  .obra__fila dd {
+    margin: 0;
+    color: var(--ink);
+  }
+
+  @media (max-width: 56rem) {
+    .obra {
+      grid-template-columns: 1fr;
+    }
+
+    .obra__info {
+      position: static;
+    }
+
+    .obra__fila dt {
+      flex-basis: 6rem;
+    }
+  }
+</style>

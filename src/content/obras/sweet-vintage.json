@@ -1,0 +1,17 @@
+{
+  "destacada": false,
+  "titulo": "Sweet Vintage",
+  "coleccion": "coches",
+  "anio": 2026,
+  "tecnica": "Óleo sobre madera",
+  "tecnica_en": "Oil on wood",
+  "alto_cm": 21.5,
+  "ancho_cm": 26.5,
+  "enmarcada": true,
+  "precio_eur": 300,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/sweet-vintage-01.jpg"
+  ],
+  "orden": 7
+}

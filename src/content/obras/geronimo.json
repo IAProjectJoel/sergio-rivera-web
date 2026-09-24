@@ -1,0 +1,12 @@
+{
+  "destacada": false,
+  "titulo": "Geronimo",
+  "coleccion": "nativos-americanos",
+  "tecnica": "Óleo sobre lámina para óleo encolada en tabla",
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/geronimo-01.jpg"
+  ],
+  "orden": 34
+}

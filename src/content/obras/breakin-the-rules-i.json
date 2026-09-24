@@ -1,0 +1,14 @@
+{
+  "destacada": false,
+  "titulo": "Breakin the rules I",
+  "coleccion": "coches",
+  "anio": 2025,
+  "tecnica": "Técnica mixta sobre lienzo",
+  "tecnica_en": "Mixed media on canvas",
+  "enmarcada": false,
+  "estado": "vendida",
+  "imagenes": [
+    "/src/assets/obras/breakin-the-rules-i-01.jpg"
+  ],
+  "orden": 11
+}

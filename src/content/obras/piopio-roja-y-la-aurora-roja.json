@@ -1,0 +1,19 @@
+{
+  "titulo": "Piopío roja y la aurora roja",
+  "titulo_en": "Red Piopío and the red dawn",
+  "coleccion": "nostalgia",
+  "anio": 2025,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "alto_cm": 41,
+  "ancho_cm": 33,
+  "enmarcada": false,
+  "precio_eur": 990,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/piopio-roja-y-la-aurora-roja-01.jpg"
+  ],
+  "destacada": false,
+  "orden": 100,
+  "publicada": false
+}

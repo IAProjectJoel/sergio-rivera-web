@@ -1,0 +1,227 @@
+---
+import { sitio } from '@/data/sitio';
+import { idiomas, otroIdioma, ruta, useT, type Lang } from '@/i18n/utils';
+
+interface Props {
+  lang: Lang;
+  altHref: string;
+}
+
+const { lang, altHref } = Astro.props;
+const t = useT(lang);
+const otro = otroIdioma(lang);
+
+const enlaces = [
+  { href: ruta('obras', lang), texto: t('nav.obras') },
+  { href: ruta('sobreMi', lang), texto: t('nav.sobreMi') },
+  { href: ruta('contacto', lang), texto: t('nav.contacto') },
+];
+
+const aqui = Astro.url.pathname.replace(/\/$/, '') || '/';
+const esActivo = (href: string) => {
+  const limpio = href.replace(/\/$/, '') || '/';
+  return limpio === '/' ? aqui === '/' : aqui.startsWith(limpio);
+};
+---
+
+<header class="cabecera">
+  <div class="contenedor barra">
+    <a class="marca" href={ruta('inicio', lang)}>
+      <span class="marca__nombre">Sergio Rivera</span>
+      <span class="marca__apellido">Martínez</span>
+    </a>
+
+    <nav class="nav" aria-label={t('nav.menu')}>
+      <ul class="nav__lista">
+        {
+          enlaces.map((e) => (
+            <li>
+              <a href={e.href} class:list={['nav__enlace', { 'is-activo': esActivo(e.href) }]}>
+                {e.texto}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+
+      <div class="nav__extra">
+        <a class="idioma" href={altHref} hreflang={otro} lang={otro} title={idiomas[otro]}>
+          {otro.toUpperCase()}
+        </a>
+        <a
+          class="ig"
+          href={sitio.instagram.url}
+          target="_blank"
+          rel="noopener me"
+          aria-label={`Instagram ${sitio.instagram.usuario}`}
+        >
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5"></rect>
+            <circle cx="12" cy="12" r="4"></circle>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"></circle>
+          </svg>
+        </a>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .cabecera {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--bone) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line-soft);
+  }
+
+  .barra {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    min-height: 4.25rem;
+  }
+
+  .marca {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+    text-decoration: none;
+    font-family: var(--font-display);
+  }
+
+  .marca__nombre {
+    font-size: 1.3rem;
+    letter-spacing: 0.01em;
+  }
+
+  .marca__apellido {
+    font-family: var(--font-body);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    padding-left: 0.1em;
+  }
+
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 3vw, 2.25rem);
+  }
+
+  .nav__lista {
+    display: flex;
+    align-items: center;
+    gap: clamp(1rem, 2.5vw, 2rem);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav__enlace {
+    position: relative;
+    font-size: 0.82rem;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--ink-soft);
+    padding-block: 0.35em;
+    transition: color var(--transicion);
+  }
+
+  .nav__enlace::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform var(--transicion);
+  }
+
+  .nav__enlace:hover,
+  .nav__enlace.is-activo {
+    color: var(--ink);
+  }
+
+  .nav__enlace:hover::after,
+  .nav__enlace.is-activo::after {
+    transform: scaleX(1);
+  }
+
+  .nav__extra {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    padding-left: clamp(0.5rem, 2vw, 1.25rem);
+    border-left: 1px solid var(--line);
+  }
+
+  .idioma {
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    color: var(--ink-faint);
+    transition: color var(--transicion);
+  }
+
+  .idioma:hover {
+    color: var(--ink);
+  }
+
+  .ig {
+    display: grid;
+    place-items: center;
+    color: var(--ink-faint);
+    transition: color var(--transicion);
+  }
+
+  .ig:hover {
+    color: var(--accent);
+  }
+
+  /* En móvil la marca se abrevia y la navegación se aprieta:
+     son solo tres secciones, no hace falta un menú hamburguesa. */
+  @media (max-width: 34rem) {
+    .barra {
+      flex-wrap: wrap;
+      min-height: 0;
+      padding-block: 0.85rem;
+      gap: 0.5rem 1rem;
+    }
+
+    .marca {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 0.45rem;
+    }
+
+    .marca__apellido {
+      font-size: 0.55rem;
+      letter-spacing: 0.2em;
+    }
+
+    .nav {
+      width: 100%;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+
+    .nav__lista {
+      gap: 1.1rem;
+    }
+
+    .nav__enlace {
+      font-size: 0.75rem;
+    }
+  }
+</style>

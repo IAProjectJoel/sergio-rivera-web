@@ -1,0 +1,16 @@
+{
+  "destacada": false,
+  "titulo": "Need money for Porsche",
+  "coleccion": "porsche",
+  "tecnica": "Técnica mixta sobre madera",
+  "tecnica_en": "Mixed media on wood",
+  "alto_cm": 21.5,
+  "ancho_cm": 26.5,
+  "enmarcada": true,
+  "precio_eur": 300,
+  "estado": "disponible",
+  "imagenes": [
+    "/src/assets/obras/need-money-for-porsche-01.jpg"
+  ],
+  "orden": 8
+}
