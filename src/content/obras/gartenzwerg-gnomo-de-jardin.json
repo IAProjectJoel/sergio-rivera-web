@@ -1,0 +1,25 @@
+{
+  "orden": 101,
+  "titulo": "Gartenzwerg(gnomo de jardín)",
+  "titulo_en": "",
+  "imagenes": [
+    "/src/assets/obras/20260914_210408.webp"
+  ],
+  "tipo": "original",
+  "edicion": "",
+  "edicion_en": "",
+  "estado": "disponible",
+  "precio_eur": 300,
+  "alto_cm": 26.5,
+  "ancho_cm": 21.5,
+  "profundidad_cm": 1,
+  "enmarcada": true,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "",
+  "anio": 2026,
+  "coleccion": "porsche",
+  "descripcion": "",
+  "descripcion_en": "",
+  "destacada": false,
+  "publicada": true
+}
