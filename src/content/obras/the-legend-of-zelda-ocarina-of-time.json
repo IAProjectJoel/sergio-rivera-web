@@ -1,17 +1,26 @@
 {
-  "destacada": true,
+  "orden": 24,
   "titulo": "The Legend of Zelda ocarina of time",
-  "coleccion": "nostalgia",
-  "anio": 2025,
-  "tecnica": "Óleo sobre lienzo",
-  "tecnica_en": "Oil on canvas",
-  "alto_cm": 92,
-  "ancho_cm": 65,
-  "enmarcada": false,
-  "estado": "vendida",
+  "titulo_en": "",
   "imagenes": [
     "/src/assets/obras/the-legend-of-zelda-ocarina-of-time-01.jpg",
     "/src/assets/obras/the-legend-of-zelda-ocarina-of-time-02.jpg"
   ],
-  "orden": 24
+  "tipo": "original",
+  "edicion": "",
+  "edicion_en": "",
+  "estado": "vendida",
+  "precio_eur": null,
+  "alto_cm": 92,
+  "ancho_cm": 65,
+  "profundidad_cm": null,
+  "enmarcada": false,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "anio": 2025,
+  "coleccion": "nostalgia",
+  "descripcion": "",
+  "descripcion_en": "",
+  "destacada": false,
+  "publicada": true
 }
