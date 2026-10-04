@@ -1,16 +1,25 @@
 {
-  "destacada": false,
+  "orden": 18,
   "titulo": "Atomic Violet",
-  "coleccion": "sneakers",
-  "anio": 2025,
-  "tecnica": "Óleo sobre lienzo",
-  "tecnica_en": "Oil on canvas",
-  "alto_cm": 33,
-  "ancho_cm": 41,
-  "enmarcada": false,
-  "estado": "vendida",
+  "titulo_en": "",
   "imagenes": [
     "/src/assets/obras/atomic-violet-01.jpg"
   ],
-  "orden": 18
+  "tipo": "original",
+  "edicion": "",
+  "edicion_en": "",
+  "estado": "vendida",
+  "precio_eur": null,
+  "alto_cm": 33,
+  "ancho_cm": 41,
+  "profundidad_cm": null,
+  "enmarcada": false,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "Oil on canvas",
+  "anio": 2025,
+  "coleccion": "sneakers",
+  "descripcion": "",
+  "descripcion_en": "",
+  "destacada": true,
+  "publicada": true
 }
