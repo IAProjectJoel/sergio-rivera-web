@@ -1,8 +1,10 @@
 {
+  "orden": 4,
   "nombre": "Sneakers",
   "nombre_en": "Sneakers",
-  "descripcion": "Zapatillas que se estrenaban el primer día de colegio y se gastaban soñando con las siguientes. Cada par guarda un verano.",
+  "padre": "",
+  "descripcion": "Zapatillas noventeras, iconos que son cultura, skate, baloncesto,hip hop, nostalgia de los 70s, 80s ,90s la música, expresion propia, coleccionismo...",
   "descripcion_en": "Trainers first worn on the first day of school and worn out dreaming of the next pair. Every pair keeps a summer inside.",
-  "orden": 4,
+  "portada": "",
   "visible": true
 }
