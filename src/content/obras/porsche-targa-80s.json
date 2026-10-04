@@ -1,0 +1,25 @@
+{
+  "orden": 102,
+  "titulo": "Porsche targa 80s",
+  "titulo_en": "",
+  "imagenes": [
+    "/src/assets/obras/20240721_091205.webp"
+  ],
+  "tipo": "original",
+  "edicion": "",
+  "edicion_en": "",
+  "estado": "vendida",
+  "precio_eur": null,
+  "alto_cm": null,
+  "ancho_cm": null,
+  "profundidad_cm": null,
+  "enmarcada": false,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "",
+  "anio": 2024,
+  "coleccion": "",
+  "descripcion": "",
+  "descripcion_en": "",
+  "destacada": false,
+  "publicada": true
+}
