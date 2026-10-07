@@ -12,6 +12,26 @@ export const ESTADOS = ['disponible', 'reservada', 'vendida', 'no_venta'] as con
 export type Estado = (typeof ESTADOS)[number];
 
 /**
+ * CAMPOS VACÍOS
+ *
+ * El panel no omite los campos que se dejan en blanco: los escribe igual,
+ * los números como `null` y los textos como `""`. Este esquema solo aceptaba
+ * que faltaran, así que en cuanto Sergio editó una obra desde el panel la
+ * compilación empezó a fallar y la web se quedó congelada en la versión
+ * anterior, sin que nadie se enterara.
+ *
+ * Aquí se traduce "vacío" a "ausente" antes de validar, en vez de obligar al
+ * panel a escribir de otra forma.
+ */
+const comoAusente = (valor: unknown) => (valor === null || valor === '' ? undefined : valor);
+
+const opcional = <T extends z.ZodTypeAny>(esquema: T) =>
+  z.preprocess(comoAusente, esquema.optional());
+
+/** Igual, pero para campos con valor por defecto. */
+const conDefecto = <T extends z.ZodTypeAny>(esquema: T) => z.preprocess(comoAusente, esquema);
+
+/**
  * OBRAS
  * Un archivo JSON por cuadro en src/content/obras/.
  * Sergio los crea desde el panel (/admin) sin tocar código.
@@ -20,40 +40,40 @@ const obras = defineCollection({
   loader: glob({ base: './src/content/obras', pattern: '**/*.json' }),
   schema: z.object({
     titulo: z.string(),
-    titulo_en: z.string().optional(),
+    titulo_en: opcional(z.string()),
 
     /**
      * Serie a la que pertenece. Si es una subserie (ej: "porsche"), la obra
      * aparece también al filtrar por su serie madre ("coches").
      * Opcional: una obra puede no pertenecer a ninguna.
      */
-    coleccion: reference('colecciones').optional(),
+    coleccion: opcional(reference('colecciones')),
 
     /**
      * Original pintado a mano o lámina/reproducción.
      * Cambia el texto de la ficha: una lámina no es "obra única" y su
      * "vendida" no significa lo mismo, porque se puede reimprimir.
      */
-    tipo: z.enum(['original', 'print']).default('original'),
+    tipo: conDefecto(z.enum(['original', 'print']).default('original')),
 
     /**
      * Solo para prints. Texto libre porque no todos son iguales:
      * "Prueba de autor (P/A) — única", "3/10"... Una P/A es pieza única
      * y una tirada de 10 no lo es; decirlo mal sería mentir sobre la obra.
      */
-    edicion: z.string().optional(),
-    edicion_en: z.string().optional(),
+    edicion: opcional(z.string()),
+    edicion_en: opcional(z.string()),
 
-    anio: z.number().int().min(1980).max(2100).optional(),
+    anio: opcional(z.number().int().min(1980).max(2100)),
 
-    tecnica: z.string().default('Óleo sobre lienzo'),
+    tecnica: conDefecto(z.string().default('Óleo sobre lienzo')),
     /**
      * Sin valor por defecto a propósito. Tenía "Oil on canvas" y eso hacía
      * que la web inglesa afirmara óleo sobre lienzo en obras que son técnica
      * mixta sobre madera. Si falta, se muestra el español: peor traducido,
      * pero cierto.
      */
-    tecnica_en: z.string().optional(),
+    tecnica_en: opcional(z.string()),
 
     /**
      * Medidas en centímetros. Alto x Ancho, como se citan en el mundo del arte.
@@ -61,12 +81,12 @@ const obras = defineCollection({
      * mejor publicarlas sin medidas que no publicarlas. Si falta una de las
      * dos, la web no muestra ninguna.
      */
-    alto_cm: z.number().positive().optional(),
-    ancho_cm: z.number().positive().optional(),
-    profundidad_cm: z.number().positive().optional(),
+    alto_cm: opcional(z.number().positive()),
+    ancho_cm: opcional(z.number().positive()),
+    profundidad_cm: opcional(z.number().positive()),
     enmarcada: z.boolean().default(false),
 
-    precio_eur: z.number().nonnegative().optional(),
+    precio_eur: opcional(z.number().nonnegative()),
     estado: z.enum(ESTADOS).default('disponible'),
 
     /**
@@ -76,8 +96,8 @@ const obras = defineCollection({
      */
     imagenes: z.array(z.string()).min(1),
 
-    descripcion: z.string().optional(),
-    descripcion_en: z.string().optional(),
+    descripcion: opcional(z.string()),
+    descripcion_en: opcional(z.string()),
 
     /** Aparece en la portada. */
     destacada: z.boolean().default(false),
@@ -102,14 +122,14 @@ const colecciones = defineCollection({
   loader: glob({ base: './src/content/colecciones', pattern: '**/*.json' }),
   schema: z.object({
     nombre: z.string(),
-    nombre_en: z.string().optional(),
+    nombre_en: opcional(z.string()),
 
     /** Serie madre. Vacío = serie principal. */
-    padre: reference('colecciones').optional(),
-    descripcion: z.string().optional(),
-    descripcion_en: z.string().optional(),
+    padre: opcional(reference('colecciones')),
+    descripcion: opcional(z.string()),
+    descripcion_en: opcional(z.string()),
     /** Foto de portada de la sección. Si se omite, usa la primera obra. */
-    portada: z.string().optional(),
+    portada: opcional(z.string()),
     orden: z.number().default(0),
     visible: z.boolean().default(true),
   }),
@@ -125,8 +145,8 @@ const paginas = defineCollection({
     titulo: z.string(),
     lang: z.enum(['es', 'en']),
     clave: z.string(),
-    subtitulo: z.string().optional(),
-    retrato: z.string().optional(),
+    subtitulo: opcional(z.string()),
+    retrato: opcional(z.string()),
     exposiciones: z.array(z.string()).default([]),
   }),
 });
