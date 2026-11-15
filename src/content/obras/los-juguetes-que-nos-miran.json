@@ -1,0 +1,26 @@
+{
+  "orden": 103,
+  "titulo": "Los juguetes que nos miran",
+  "titulo_en": "The Toys That Look at Us",
+  "imagenes": [
+    "/src/assets/obras/20261104_105337.webp",
+    "/src/assets/obras/file_00000000659082439d70d454d17626ce.webp"
+  ],
+  "tipo": "original",
+  "edicion": "",
+  "edicion_en": "",
+  "estado": "vendida",
+  "precio_eur": null,
+  "alto_cm": 92,
+  "ancho_cm": 65,
+  "profundidad_cm": 2,
+  "enmarcada": false,
+  "tecnica": "Óleo sobre lienzo",
+  "tecnica_en": "",
+  "anio": 2026,
+  "coleccion": "nostalgia",
+  "descripcion": "",
+  "descripcion_en": "",
+  "destacada": false,
+  "publicada": true
+}
